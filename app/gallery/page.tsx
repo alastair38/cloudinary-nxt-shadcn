@@ -1,52 +1,45 @@
-'use client';
+import CloudinaryImage from '@/components/ui/cloudinaryImage';
+import UploadButton from '@/components/ui/uploadButton';
+import cloudinary from 'cloudinary';
 
-import { Button } from '@/components/ui/button';
-import { CldUploadButton, CldUploadWidgetResults } from 'next-cloudinary';
-import { CldImage } from 'next-cloudinary';
-import { useState } from 'react';
+export type SearchResult = {
+  public_id: string;
+  width: number;
+  height: number;
+  tags: string[];
+  context: {
+    alt: string;
+  };
+};
 
-function Gallery() {
-  const [imageId, setImageId] = useState('');
+export default async function Gallery() {
+  const results = (await cloudinary.v2.search
+    .expression(`resource_type:image`)
+    .sort_by('created_at', 'desc')
+    .with_field('context')
+    .with_field('tags')
+    .max_results(5)
+    .execute()) as { resources: SearchResult[] };
+
+  console.log(results.resources[0]);
+
   return (
-    <section className="space-y-12">
+    <section className="space-y-12 p-12">
       <h1 className="font-bold text-5xl">Gallery</h1>
 
-      <Button asChild>
-        <div className="flex gap-2 items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-            />
-          </svg>
+      <UploadButton />
 
-          <CldUploadButton
-            onUpload={(result: CldUploadWidgetResults) => {
-              setImageId(result.info?.public_id);
-            }}
-            uploadPreset="ht9gl0ey"
+      <div className="grid grid-cols-3 gap-4">
+        {results.resources.map(result => (
+          <CloudinaryImage
+            key={result.public_id}
+            src={result.public_id}
+            height={result.height}
+            width={result.width}
+            alt={result.context?.alt}
           />
-        </div>
-      </Button>
-      {imageId && (
-        <CldImage
-          width="400"
-          height="600"
-          src={imageId}
-          sizes="25vw"
-          alt="Description of my image"
-        />
-      )}
+        ))}
+      </div>
     </section>
   );
 }
-
-export default Gallery;
