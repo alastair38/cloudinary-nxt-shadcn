@@ -2,14 +2,18 @@
 
 import { Heart } from '@/components/icons/heart';
 import { CldImage, CldImageProps } from 'next-cloudinary';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { FullHeart } from '@/components/icons/full-heart';
 import { SearchResult } from '@/app/gallery/page';
 import { setAsFavoriteAction } from '@/app/gallery/actions';
+import { ImageMenu } from './image-menu';
+import { AddToAlbumDialog } from './add-to-album-dialog';
+import { SelectTags } from './select-tags';
 
 export function CloudinaryImage(
   props: {
     imagedata: SearchResult;
+
     onUnheart?: (unheartedResource: SearchResult) => void;
   } & Omit<CldImageProps, 'src'>
 ) {
@@ -22,9 +26,9 @@ export function CloudinaryImage(
   );
 
   return (
-    <div className="relative">
+    <div className="h-full">
       <CldImage {...props} src={imagedata.public_id} />
-      {isFavorited ? (
+      {/* {isFavorited ? (
         <FullHeart
           onClick={() => {
             onUnheart?.(imagedata);
@@ -45,8 +49,11 @@ export function CloudinaryImage(
           }}
           className="absolute top-2 left-2 hover:text-red-500 cursor-pointer"
         />
-      )}
+      )} */}
+
       {/* <ImageMenu image={imagedata} /> */}
+
+      {/* <AddToAlbumDialog image={imagedata} onClose={() => console.log('hi')} /> */}
     </div>
   );
 }

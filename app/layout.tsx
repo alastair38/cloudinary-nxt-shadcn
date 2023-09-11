@@ -5,6 +5,8 @@ import { Inter } from 'next/font/google';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import cloudinary from 'cloudinary';
+import AppContext from '../components/AppContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -101,17 +103,33 @@ async function SideMenu() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { tags } = await cloudinary.v2.api.tags();
+
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+      <body data-tags={tags} className={inter.className}>
         <div className="border-b">
-          <div className="flex h-16 items-center px-4 container mx-auto">
-            North Walk Photos
+          <div className="flex gap-2 h-16 items-center px-4 container mx-auto">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-teal-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25"
+              />
+            </svg>
+            <h1 className="font-black">North Walk Photos</h1>
             <div className="ml-auto flex items-center space-x-4">
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" />
@@ -124,7 +142,7 @@ export default function RootLayout({
         <div className="flex">
           <SideMenu />
 
-          <div className="w-full px-4 pt-8">{children}</div>
+          <div className="w-full px-4 py-8">{children}</div>
         </div>
       </body>
     </html>

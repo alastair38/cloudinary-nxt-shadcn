@@ -1,5 +1,6 @@
+import { ForceRefresh } from '@/components/force-refresh';
 import GalleryGrid from '@/components/gallery-grid';
-import UploadButton from '@/components/uploadButton';
+
 import cloudinary from 'cloudinary';
 
 export type SearchResult = {
@@ -12,27 +13,26 @@ export type SearchResult = {
   };
 };
 
-export default async function Gallery() {
+export default async function FavoritesPage() {
   const results = (await cloudinary.v2.search
-    .expression(`resource_type:image`)
+    .expression(`resource_type:image AND tags=favorite`)
     .sort_by('created_at', 'desc')
     .with_field('context')
     .with_field('tags')
-    .max_results(15)
+    .max_results(5)
     .execute()) as { resources: SearchResult[] };
 
-  const { tags } = await cloudinary.v2.api.tags();
+  // console.log(results.resources[0]);
 
   return (
     <section>
+      <ForceRefresh />
       <div className="flex flex-col gap-8">
         <div className="flex justify-between">
-          <h1 className="text-4xl font-bold">Gallery</h1>
-          <UploadButton tags={tags} />
+          <h1 className="text-4xl font-bold">Favorites</h1>
         </div>
-
-        <div className="grid grid-cols-fit gap-6 mb-6">
-          <GalleryGrid images={results.resources} tags={tags} />
+        <div className="grid grid-cols-fit gap-4">
+          <GalleryGrid images={results.resources} tags={[]} />
         </div>
       </div>
     </section>
